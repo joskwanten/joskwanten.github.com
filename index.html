@@ -1,0 +1,331 @@
+<html>
+
+<head>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0px 20px 0px 20px;
+            height: 100%;
+        }
+        
+        .title {
+            grid-area: header;
+        }
+        
+        .title h1 {
+            font-size: 100px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .sp-title {
+            grid-area: sp1;
+        }
+        
+        button {
+            width: 100%;
+            font-size: 40;
+            height: 80px;
+        }
+        
+        .spb1 {
+            grid-area: spb1;
+        }
+        
+        .spb2 {
+            grid-area: spb2;
+        }
+        
+        .spb3 {
+            grid-area: spb3;
+        }
+        
+        .spb4 {
+            grid-area: spb4;
+        }
+        
+        .mp-title {
+            grid-area: mp1;
+        }
+        
+        .mpb1 {
+            grid-area: mpb1;
+        }
+        
+        .mpb2 {
+            grid-area: mpb2;
+        }
+        
+        .mpb3 {
+            grid-area: mpb3;
+        }
+        
+        .time {
+            grid-area: time;
+            font-size: 100px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .mpb4 {
+            grid-area: mpb4;
+        }
+        
+        .footer {
+            grid-area: footer;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template: 'header header header header' 'sp1 sp1 sp1 sp1' 'spb1 spb2 spb3 spb4' 'mp1 mp1 mp1 mp1' 'mpb1 mpb2 mpb3 mpb4' 'time time time time' 'footer footer footer footer';
+        }
+    </style>
+</head>
+
+<body class="grid-container">
+    <div class="title">
+        <h1>Shot Timer</h1>
+    </div>
+
+    <div class="sp-title">
+        <h2>Service pistol</h2>
+    </div>
+
+    <button class="spb1">15s</button>
+    <button class="spb2">12s</button>
+    <button class="spb3">3 x 3s</button>
+    <button class="spb4">6s</button>
+
+    <div class="mp-title">
+        <h2>Militair pistool</h2>
+    </div>
+
+    <button class="mpb1">3min</button>
+    <button class="mpb2">15s</button>
+    <button class="mpb3">12s</button>
+    <button class="mpb4">9s</button>
+
+    <div class="time">
+        <h2>00:00:00</h2>
+    </div>
+
+    <div class="footer">
+        <h3><i>Copyright Jos Kwanten</i></h3>
+
+    </div>
+
+    <script>
+        var audioCtx;
+
+        //window.scrollTo(0, 1);
+
+        let playBeep = (time) => {
+            // create Oscillator node
+            var oscillator = audioCtx.createOscillator();
+
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // value in hertz
+            oscillator.connect(audioCtx.destination);
+            oscillator.start();
+
+            setTimeout(() => oscillator.stop(), time);
+        }
+
+        let stopwatchHandle;
+        let stopwatchTime;
+
+        startStopwatch = () => {
+            time = Date.now();
+
+            if (stopwatchTime) {
+                time = time - stopwatchTime;
+            }
+
+            stopwatchHandle = setInterval(() => {
+                let dtime = Date.now() - time;
+                stopwatchTime = dtime;
+
+                let ms = Math.floor((dtime % 1000) / 10);
+                let s = Math.floor(dtime / 1000);
+                let m = Math.floor(s / 60);
+                s = s - m * 60;
+
+                document.querySelector('.time h2').innerHTML = `${('0' + m).slice(-2)}:${('0' + s).slice(-2)}:${('0' + ms).slice(-2)}`;
+            }, 20);
+        }
+
+        stopStopwatch = (endtime) => {
+            document.querySelector('.time h2').innerHTML = endtime;
+            clearInterval(stopwatchHandle);
+            stopwatchTime = undefined;
+            stopwatchHandle = undefined;
+        }
+
+        pauseStopwatch = (laptime) => {
+            document.querySelector('.time h2').innerHTML = laptime;
+            clearInterval(stopwatchHandle);
+            stopwatchHandle = undefined;
+        }
+
+        document.querySelector('.spb1').onclick = () => {
+            audioCtx = new(window.AudioContext || window.webkitAudioContext)()
+            let handle;
+            playBeep(100);
+            setTimeout(() => playBeep(100), 1000);
+            setTimeout(() => {
+                playBeep(200);
+                startStopwatch();
+            }, 2000);
+
+            setTimeout(() => playBeep(2000), 15000);
+            setTimeout(() => {
+                stopStopwatch(`00:15:00`);
+            }, 17000);
+        };
+
+        document.querySelector('.spb2').onclick = () => {
+            audioCtx = new(window.AudioContext || window.webkitAudioContext)()
+            let handle;
+            playBeep(100);
+            setTimeout(() => playBeep(100), 1000);
+            setTimeout(() => {
+                playBeep(200);
+                startStopwatch();
+            }, 2000);
+
+            setTimeout(() => playBeep(2000), 12000);
+            setTimeout(() => {
+                stopStopwatch(`00:12:00`);
+            }, 14000);
+        };
+
+        document.querySelector('.spb3').onclick = () => {
+            audioCtx = new(window.AudioContext || window.webkitAudioContext)()
+            let handle;
+            playBeep(100);
+            setTimeout(() => playBeep(100), 1000);
+            setTimeout(() => {
+                playBeep(200);
+                //startStopwatch();
+            }, 2000);
+
+            // 1
+            setTimeout(() => {
+                playBeep(500);
+                startStopwatch();
+            }, 5000);
+
+            setTimeout(() => {
+                playBeep(200);
+                pauseStopwatch('00:03:00');
+                //stopStopwatch('00:03:00');
+            }, 8000);
+
+            // 2
+            setTimeout(() => {
+                playBeep(500);
+                startStopwatch();
+            }, 11000);
+
+            setTimeout(() => {
+                playBeep(200);
+                pauseStopwatch('00:06:00');
+            }, 14000);
+
+            // 3
+            setTimeout(() => {
+                playBeep(500);
+                startStopwatch();
+            }, 17000);
+
+            setTimeout(() => {
+                playBeep(200);
+                stopStopwatch('00:09:00')
+            }, 20000);
+        };
+
+        document.querySelector('.spb4').onclick = () => {
+            audioCtx = new(window.AudioContext || window.webkitAudioContext)()
+            let handle;
+            playBeep(100);
+            setTimeout(() => playBeep(100), 1000);
+            setTimeout(() => {
+                playBeep(200);
+                startStopwatch();
+            }, 2000);
+
+            setTimeout(() => playBeep(2000), 6000);
+            setTimeout(() => {
+                stopStopwatch(`00:06:00`);
+            }, 8000);
+        };
+
+        document.querySelector('.mpb1').onclick = () => {
+            audioCtx = new(window.AudioContext || window.webkitAudioContext)()
+            let handle;
+            playBeep(100);
+            setTimeout(() => playBeep(100), 1000);
+            setTimeout(() => {
+                playBeep(200);
+                startStopwatch();
+            }, 2000);
+
+            setTimeout(() => playBeep(2000), 180000);
+            setTimeout(() => {
+                stopStopwatch(`03:00:00`);
+            }, 182000);
+        };
+
+        document.querySelector('.mpb2').onclick = () => {
+            audioCtx = new(window.AudioContext || window.webkitAudioContext)()
+            let handle;
+            playBeep(100);
+            setTimeout(() => playBeep(100), 1000);
+            setTimeout(() => {
+                playBeep(200);
+                startStopwatch();
+            }, 2000);
+
+            setTimeout(() => playBeep(2000), 15000);
+            setTimeout(() => {
+                stopStopwatch(`00:15:00`);
+            }, 17000);
+        };
+
+        document.querySelector('.mpb3').onclick = () => {
+            audioCtx = new(window.AudioContext || window.webkitAudioContext)()
+            let handle;
+            playBeep(100);
+            setTimeout(() => playBeep(100), 1000);
+            setTimeout(() => {
+                playBeep(200);
+                startStopwatch();
+            }, 2000);
+
+            setTimeout(() => playBeep(2000), 12000);
+            setTimeout(() => {
+                stopStopwatch(`00:12:00`);
+            }, 14000);
+        };
+
+        document.querySelector('.mpb4').onclick = () => {
+            audioCtx = new(window.AudioContext || window.webkitAudioContext)()
+            let handle;
+            playBeep(100);
+            setTimeout(() => playBeep(100), 1000);
+            setTimeout(() => {
+                playBeep(200);
+                startStopwatch();
+            }, 2000);
+
+            setTimeout(() => playBeep(2000), 9000);
+            setTimeout(() => {
+                stopStopwatch(`00:09:00`);
+            }, 11000);
+        };
+    </script>
+</body>
+
+</html>
