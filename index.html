@@ -5,27 +5,56 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            margin: 0px 20px 0px 20px;
+            margin: 0px 0px 0px 0px;
             height: 100%;
             -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
+            display: flex;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            min-width: 300px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            background: #f1f1f1;
+        }
+        
+        .page-header {
+            flex: 0 0 64px;
+            background: black;
+            color: white;
+            font-size: 30px;
+            line-height: 64px;
+            padding-left: 32px;
+        }
+        
+        .introduction {
+            flex: 1 1 auto;
+            background: #fafafa;
+            color: #333;
+            padding: 32px 32px 32px 32px;
         }
     </style>
 </head>
 
 <body>
-    <h1>Jos Kwanten github page</h1>
-    <p>Welcome to my github page. Here you can find a demonstration of a few of my github projects / repos</p>
-    <h2><a href="mog.html">Maze of Galious</a></h2>
-    <p>
-        This is just a very quick and dirty port of the Maze of Galious remake by braingames (
-        <a href="http://www.braingames.getput.com/mog/">http://www.braingames.getput.com/mog/</a>). The code is compiled with emscripten to compile C++ code to javascript and the SDL code is tweaked a little bit to make everything work again. Saving and
-        loading only works by typing the codes. Storage to disk / local storage is not implemented yet.
-    </p>
-    <p>Source code can be found here: <a href="https://github.com/joskwanten/mog-emscripten">https://github.com/joskwanten/mog-emscripten</a></p>
-	
-	<href src="https://cdn.rawgit.com/joskwanten/pacman/383019837dfd31c3eff598af19e5c3911776415c/index.html">Pacman</href>
+    <div class="page-header">Jos Kwanten his Awsome Github Page</div>
+    <div class="introduction">
+        <h4>
+            Here you can find some live examples of some github projects where I have been working on.
+        </h4>
+        <h2><a href="mog.html">Maze of Galious</a></h2>
+        <p>
+            I read a lot about web-assembly and was curious if I could just port some existing C++ to web-assembly / javascript by using emscripten. After some testing with emscripten I decided to port something a little more complex. When I was a kid, I used to
+            play the Maze of Galious a lot. And in 2003 some guys did a lot of work to make a remake of this game, with nice graphics and music. What I have done is to port this remake version of the Maze of Galious so that you can play it in a browser.
+            This is just a very quick and dirty port of the Maze of Galious remake by braingames (
+            <a href="http://www.braingames.getput.com/mog/">http://www.braingames.getput.com/mog/</a>). The code is compiled with emscripten to compile C++ code to javascript and the SDL code is tweaked a little bit to make everything work again. Saving
+            and loading only works by typing the codes. Storage to disk / local storage is not implemented yet.
+        </p>
+        <p>Source code can be found here: <a href="https://github.com/joskwanten/mog-emscripten">https://github.com/joskwanten/mog-emscripten</a></p>
+    </div>
 </body>
 
 </html>
