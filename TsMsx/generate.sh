@@ -1,0 +1,1 @@
+node z80gen.js > src/z80_generated.ts
