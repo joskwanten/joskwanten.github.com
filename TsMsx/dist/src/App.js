@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { TMS9918 } from './TMS9918.js';
 import { SubSlotSelector } from './SubSlotSelector.js';
 import { Rom } from './Rom.js';
-import { Z80 } from './z80_generated.js';
+import * as Z80 from './Z80.js';
 import { Slots } from './Slots.js';
 import { EmptySlot } from './EmptySlot.js';
 import { Ram } from './Ram.js';
@@ -24,6 +24,10 @@ function changeBackground(c) {
         element.style.backgroundColor = color;
     }
 }
+const Hz = 60;
+const MHz = 3.56;
+const CyclesPerInterrupt = (MHz * 1000000) / Hz;
+const loopTime = 1000 / Hz;
 let z80 = null;
 let vdp = new TMS9918(() => z80 === null || z80 === void 0 ? void 0 : z80.interrupt(), changeBackground);
 let ppi = new PPI();
@@ -41,12 +45,12 @@ let fillBuffer = function (e) {
         //left[i] = right[i] = psg.process();
         ay3.process();
         ay3.removeDC();
-        left[i] = ay3.left / 2;
-        right[i] = ay3.right / 2;
+        left[i] = ay3.left / 3;
+        right[i] = ay3.right / 3;
         if (scc) {
             let val = scc.process();
-            left[i] += val;
-            right[i] += val;
+            left[i] += .5 * val;
+            right[i] += .5 * val;
             left[i] /= 2;
             right[i] /= 2;
         }
@@ -59,12 +63,23 @@ function wait(ms) {
 }
 function reset() {
     return __awaiter(this, void 0, void 0, function* () {
-        // let response = await fetch('cbios_main_msx1.rom');
+        //let response = await fetch('cbios_main_msx1.rom');
         let response = yield fetch('MSX1.ROM');
         let buffer = yield response.arrayBuffer();
         let bios = new Uint8Array(buffer);
         let biosMemory = new Uint8Array(0x10000);
         bios.forEach((b, i) => biosMemory[i] = b);
+        response = yield fetch('cbios_logo_msx1.rom');
+        //let response = await fetch('MSX1.ROM');
+        buffer = yield response.arrayBuffer();
+        let logo = new Uint8Array(buffer);
+        logo.forEach((b, i) => biosMemory[i + 0x8000] = b);
+        // let response = await fetch('cbios_main_msx1.rom');
+        // //let response = await fetch('MSX1.ROM');
+        // let buffer = await response.arrayBuffer();
+        // let bios = new Uint8Array(buffer);
+        // let biosMemory = new Uint8Array(0x10000);
+        // bios.forEach((b, i) => biosMemory[i] = b);
         // response = await fetch('games/QBERT.ROM');
         // buffer = await response.arrayBuffer();
         // let game = new Uint8Array(buffer);
@@ -72,13 +87,32 @@ function reset() {
         // gameMemory.forEach((b, i) => gameMemory[i] = 0);
         // game.forEach((g, i) => gameMemory[i + 0x4000] = g);
         // let slot1 = new Rom(gameMemory);
-        response = yield fetch('games/SALAMAND.ROM');
-        buffer = yield response.arrayBuffer();
-        let game = new Uint8Array(buffer);
-        let slot1 = new KonamiMegaRomSCC(game, 44100);
-        scc = slot1;
+        const queryString = window.location.search.replace(/\?/, '');
+        let slot1;
+        if (queryString) {
+            console.log(queryString);
+            response = yield fetch(queryString);
+            buffer = yield response.arrayBuffer();
+            let game = new Uint8Array(buffer);
+            if (buffer.byteLength > 0x8000) {
+                slot1 = new KonamiMegaRomSCC(game, 44100);
+                scc = slot1;
+            }
+            else {
+                let gameMemory = new Uint8Array(0x10000);
+                gameMemory.forEach((b, i) => gameMemory[i] = 0);
+                game.forEach((g, i) => gameMemory[i + 0x4000] = g);
+                slot1 = new Rom(gameMemory);
+            }
+        }
+        // response = await fetch('cbios_disk.rom');
+        // buffer = await response.arrayBuffer();
+        // let diskrom = new Uint8Array(buffer);
+        // let diskMemory = new Uint8Array(0x10000);
+        // diskrom.forEach((b, i) => diskMemory[i + 0x8000] = b);
+        // let slot3sub1 = new Rom(diskMemory);
         let slot0 = new Rom(biosMemory);
-        //let slot1 = new EmptySlot();
+        slot1 = slot1 ? slot1 : new EmptySlot();
         let slot2 = new EmptySlot();
         let slot3 = new SubSlotSelector([new EmptySlot(), new EmptySlot(), new Ram(), new EmptySlot()]);
         let slots = new Slots([slot0, slot1, slot2, slot3]);
@@ -101,6 +135,16 @@ function reset() {
                         return slots.getSlotSelector();
                     case 0xa9:
                         return ppi.readA9();
+                    case 0xd0:
+                    case 0xd1:
+                    case 0xd2:
+                    case 0xd3:
+                    case 0xd4:
+                    case 0xd5:
+                    case 0xd6:
+                    case 0xd7:
+                        console.log(`Read of ${address.toString(16)}`);
+                        return 0xff;
                     default:
                         //console.log(`Port read not implemented ${address.toString(16)}`);
                         return 0xff;
@@ -134,6 +178,16 @@ function reset() {
                     case 0x7d:
                         console.debug("Check program counter");
                         break;
+                    case 0xd0:
+                    case 0xd1:
+                    case 0xd2:
+                    case 0xd3:
+                    case 0xd4:
+                    case 0xd5:
+                    case 0xd6:
+                    case 0xd7:
+                        console.log(`Write of ${address.toString(16)}:${value.toString(16)}`);
+                        break;
                     case 0x20:
                         throw new Error('Invalid');
                     case 0x2e:
@@ -154,23 +208,31 @@ function reset() {
         class ConsoleLogger {
             debug(str, registers) {
                 console.log(str);
+                console.log(registers);
             }
         }
         let io = new IoBus();
-        z80 = new Z80(slots, io, new ConsoleLogger());
+        // Wrapper object to use Z80.js
+        let core = {
+            mem_read: (address) => slots.uread8(address),
+            mem_write: (address, value) => slots.uwrite8(address, value),
+            io_read: (address) => io.read8(address & 0xff),
+            io_write: (address, value) => io.write8(address & 0xff, value)
+        };
+        z80 = Z80.Z80(core);
+        z80.reset();
     });
 }
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         setInterval(() => {
-            if (z80) {
-                let lastCycles = z80.cycles;
-                while ((z80.cycles - lastCycles) < 60000) {
-                    z80.executeSingleInstruction();
-                }
-                vdp.checkAndGenerateInterrupt(Date.now());
+            let cycles = 0;
+            // 
+            while (cycles < CyclesPerInterrupt) {
+                cycles += z80.run_instruction();
             }
-        }, 16.67);
+            vdp.checkAndGenerateInterrupt(Date.now());
+        }, loopTime);
     });
 }
 reset().then(() => {

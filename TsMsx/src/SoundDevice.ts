@@ -1,3 +1,0 @@
-interface SoundDevice {
-    process(): number;
-}

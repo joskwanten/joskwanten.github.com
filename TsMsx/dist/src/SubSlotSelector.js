@@ -10,13 +10,13 @@ export class SubSlotSelector {
             return this.subSlots[this.subSlotRegister & 0x3];
         }
         else if (address >= 0x4000 && address <= 0x7fff) {
-            return this.subSlots[(this.subSlotRegister >> 2) & 0x3];
+            return this.subSlots[(this.subSlotRegister >>> 2) & 0x3];
         }
         else if (address >= 0x8000 && address <= 0xbfff) {
-            return this.subSlots[(this.subSlotRegister >> 4) & 0x3];
+            return this.subSlots[(this.subSlotRegister >>> 4) & 0x3];
         }
         else {
-            return this.subSlots[(this.subSlotRegister >> 6) & 0x3];
+            return this.subSlots[(this.subSlotRegister >>> 6) & 0x3];
         }
     }
     uread8(address) {
@@ -30,7 +30,7 @@ export class SubSlotSelector {
         return this.selectedSlot(address).read8(address);
     }
     uread16(address) {
-        return this.selectedSlot(address).uread16(address);
+        return (this.uread8(address + 1) << 8) + this.uread8(address);
     }
     uwrite8(address, value) {
         if (address == 0xffff) {
@@ -42,9 +42,7 @@ export class SubSlotSelector {
         }
     }
     uwrite16(address, value) {
-        if (address == 0xfffe) {
-            this.subSlotRegister = (value >> 8) & 0xff;
-        }
-        this.selectedSlot(address).uwrite16(address, value);
+        this.uwrite8(address, value);
+        this.uwrite8(address + 1, value >>> 8);
     }
 }

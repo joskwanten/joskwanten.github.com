@@ -55,10 +55,7 @@ export class KonamiMegaRomSCC {
         return this.memorys[(page * this.pageSize) + (address % this.pageSize)];
     }
     uread16(address) {
-        let pageIndex = (address >>> 13) % 8;
-        let page = this.selectedPages[pageIndex];
-        return this.memory[(page * this.pageSize) + (address % this.pageSize)]
-            + (this.memory[(page * this.pageSize) + (address % this.pageSize) + 1] << 8);
+        return this.uread8(address) + (this.uread8(address + 1) << 8);
     }
     uwrite8(address, value) {
         if (address % 0x2000 >= 0x1800) {
@@ -68,13 +65,13 @@ export class KonamiMegaRomSCC {
                     this.scc[reg] = value;
                 }
             }
-            return;
         }
         else {
-            this.selectedPages[(address >>> 13) % 8] = value;
+            this.selectedPages[(address >>> 13) % 8] = value & 0x3f;
         }
     }
     uwrite16(address, value) {
-        // Not implemented
+        this.uwrite8(address, value);
+        this.uwrite8(address + 1, (value >>> 8));
     }
 }
