@@ -2,7 +2,6 @@ export class Slots {
     constructor(slots) {
         this.slots = slots;
         this.slotRegister = 0x00; // Startup condition slot 0 is selected to start the ROM
-        console.log(slots.length);
     }
     getSlotSelector() {
         return this.slotRegister;
@@ -28,16 +27,7 @@ export class Slots {
     uread8(address) {
         return this.selectedSlot(address).uread8(address);
     }
-    read8(address) {
-        return this.selectedSlot(address).read8(address);
-    }
-    uread16(address) {
-        return this.selectedSlot(address).uread16(address);
-    }
     uwrite8(address, value) {
         this.selectedSlot(address).uwrite8(address, value);
-    }
-    uwrite16(address, value) {
-        this.selectedSlot(address).uwrite16(address, value);
     }
 }

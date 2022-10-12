@@ -113,7 +113,7 @@ body {
     height: 576px; */
     width: 256;
     height: 212px;
-    transform: scale(3);
+    transform: scale(2);
     margin: auto;
 }
 
@@ -137,4 +137,36 @@ body {
     top:8px;
     right:0px;
     border: none;
+}
+
+#fullscreen {
+    position: absolute;
+    background-color:rgba(0,0,0,0.0);
+    height: 32px;
+    color: rgba(255.0, 255, 255, .5 );
+    stroke: rgba(255.0, 255, 255, .5 );
+    stroke-width: 3px;
+    bottom:8px;
+    right:0px;
+    border: none;
+}
+
+#options {
+    position: absolute;
+    background-color:rgba(0,0,0,0.0);
+    height: 32px;
+    color: rgba(255.0, 255, 255, .5 );
+    stroke: rgba(255.0, 255, 255, .5 );
+    stroke-width: 3px;
+    bottom:8px;
+    left: 8px;
+    border: none;
+}
+
+#options button {
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.5);
+    color: rgba(255,255,255,0.5);
 }

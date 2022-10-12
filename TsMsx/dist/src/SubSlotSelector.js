@@ -26,12 +26,6 @@ export class SubSlotSelector {
         }
         return this.selectedSlot(address).uread8(address);
     }
-    read8(address) {
-        return this.selectedSlot(address).read8(address);
-    }
-    uread16(address) {
-        return (this.uread8(address + 1) << 8) + this.uread8(address);
-    }
     uwrite8(address, value) {
         if (address == 0xffff) {
             //console.log(`Writing sub slot register : ${value}`);
@@ -40,9 +34,5 @@ export class SubSlotSelector {
         else {
             this.selectedSlot(address).uwrite8(address, value);
         }
-    }
-    uwrite16(address, value) {
-        this.uwrite8(address, value);
-        this.uwrite8(address + 1, value >>> 8);
     }
 }
