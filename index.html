@@ -15,10 +15,11 @@
             height: 100%;
             flex-direction: column;
             min-width: 300px;
-            max-width: 600px;
+            max-width: 800px;
             margin-left: auto;
             margin-right: auto;
-            background: #f1f1f1;
+            background: black;
+            color: white;
         }
         
         .page-header {
@@ -32,29 +33,53 @@
         
         .introduction {
             flex: 1 1 auto;
-            background: #fafafa;
-            color: #333;
+            background: #111;
+            color: #eee;
             padding: 32px 32px 32px 32px;
         }
     </style>
 </head>
-
 <body>
-    <div class="page-header">Jos Kwanten his Awsome Github Page</div>
     <div class="introduction">
-        <h4>
-            Here you can find some live examples of some github projects where I have been working on.
-        </h4>
-        <h2><a href="mog.html">Maze of Galious</a></h2>
-        <p>
-            I read a lot about web-assembly and was curious if I could just port some existing C++ to web-assembly / javascript by using emscripten. After some testing with emscripten I decided to port something a little more complex. When I was a kid, I used to
-            play the Maze of Galious a lot. And in 2003 some guys did a lot of work to make a remake of this game, with nice graphics and music. What I have done is to port this remake version of the Maze of Galious so that you can play it in a browser.
-            This is just a very quick and dirty port of the Maze of Galious remake by braingames (
-            <a href="http://www.braingames.getput.com/mog/">http://www.braingames.getput.com/mog/</a>). The code is compiled with emscripten to compile C++ code to javascript and the SDL code is tweaked a little bit to make everything work again. Saving
-            and loading only works by typing the codes. Storage to disk / local storage is not implemented yet.
-        </p>
-        <p>Source code can be found here: <a href="https://github.com/joskwanten/mog-emscripten">https://github.com/joskwanten/mog-emscripten</a></p>
-    </div>
+    <h1>TsMsx - Browser-Based MSX Emulator</h1>
+
+    <p>Welcome to TsMsx, a nostalgic journey back to the world of MSX computers right from your web browser. Crafted
+        with passion and written in TypeScript, TsMsx allows you to relive the magic of MSX 1 emulation, offering a
+        glimpse into the computing era that fueled our digital adventures.</p>
+
+    <h2>About</h2>
+
+    <p>TsMsx is not just an emulator; it's a personal ode to the past. The MSX, my first computer, bestowed upon me as
+        a cherished 13th birthday gift by my parents, holds a special place in my heart. With TsMsx, I invite you to
+        share in the nostalgia and experience the joy of MSX computing.</p>
+
+    <h2>Features</h2>
+
+    <ul>
+        <li><strong>Browser-Based:</strong> Run TsMsx directly in your web browser, eliminating the need for
+            additional installations. Enjoy the MSX experience with ease, anytime, anywhere.</li>
+        <li><strong>MSX 1 Emulation:</strong> TsMsx faithfully recreates the MSX 1 environment, allowing you to run
+            your favorite MSX 1 games and applications.</li>
+        <li><strong>Written in TypeScript:</strong> Leveraging the power and flexibility of TypeScript, TsMsx is not
+            just an emulator; it's a testament to the modern development tools that bring the past to life.</li>
+    </ul>
+    
+    <h2>Play some of my favorites online</h2>
+    <p><a href="TsMsx/index.html?games/GRADIUS2.ROM">Nemesis (Gradius), Konami 1986</a></p>
+    <p><a href="TsMsx/index.html?games/GRADIUS2.ROM">Nemesis 2 (Gradius 2), Konami 1987</a></p>
+    <p><a href="TsMsx/index.html?games/SALAMAND.ROM">Salamander, Konami 1987</a></p>
+    <p><a href="TsMsx/index.html?games/KVALL2M1.ROM">Kings Valley II, Konami 1989</a></p>
+    
+    <h2>Contributing</h2>
+
+    <p>TsMsx is an open-source project, and I welcome contributions from fellow MSX enthusiasts and TypeScript
+        developers. Feel free to explore the code, report issues, and submit pull requests to make TsMsx even better.
+    </p>
+
+    <p>Thank you for joining me on this nostalgic voyage with TsMsx. May your MSX memories be rekindled, and may new
+        ones be forged in the world of browser-based emulation.</p>
+
+    <p>Happy coding and MSX gaming!</p>        
 </body>
 
 </html>
