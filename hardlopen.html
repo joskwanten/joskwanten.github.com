@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riegel Formula Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            color: #eee;
+            background-color: #111;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: auto;
+        }
+
+        input,
+        button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 1rem;
+            color: #eee;
+            background-color: #111;
+            border: solid 1px gray;
+        }
+
+        button {
+            width: 100%;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Riegel Formula Calculator</h1>
+        <p>Enter your time and distances to calculate the estimated time for a different distance.</p>
+
+        <label for="time1">Time for known distance (in minutes):</label>
+        <input type="text" id="time1" placeholder="e.g., 46:23" required>
+
+        <label for="distance1">Known distance (in meters):</label>
+        <input type="number" id="distance1" placeholder="e.g., 10000" required>
+
+        <label for="distance2">Target distance (in meters):</label>
+        <input type="number" id="distance2" placeholder="e.g., 21100" required>
+
+        <label for="k-value">Riegel exponent (k):</label>
+        <input type="number" id="k-value" placeholder="Default is 1.06" value="1.06" step="0.01" required>
+
+        <button onclick="calculateTime()">Calculate</button>
+
+        <h2>Known speed: <span id="known-speed">--</span> min/km</h2>
+        <h2>Estimated Time: <span id="result">--</span> minutes</h2>
+        <h2>Estimated Speed: <span id="speed">--</span> min/km</h2>
+    </div>
+
+    <script>
+        function secondsToTimeString(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600); // Bepaal het aantal uren
+            const remainingSeconds = totalSeconds % 3600; // Resterende seconden na uren
+            const minutes = Math.floor(remainingSeconds / 60); // Bepaal het aantal minuten
+            const seconds = Math.round(remainingSeconds % 60); // Overgebleven seconden
+
+            // Zorg dat de output altijd 2 cijfers heeft voor minuten en seconden
+            const paddedHours = String(hours).padStart(2, '0');
+            const paddedMinutes = String(minutes).padStart(2, '0');
+            const paddedSeconds = String(seconds).padStart(2, '0');
+
+            return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
+        }
+
+
+        function timeStringToSeconds(timeString) {
+            const parts = timeString.split(':').map(Number); // Splits en converteer naar nummers
+            const length = parts.length;
+
+            const seconds = length > 0 ? parts[length - 1] || 0 : 0;
+            const minutes = length > 1 ? parts[length - 2] || 0 : 0; // Haal minuten, standaard 0
+            const hours = length > 2 ? parts[length - 3] || 0 : 0; // Haal uren, standaard 0 als niet aanwezig
+            
+            return (hours * 3600) + (minutes * 60) + seconds; // Totaal in seconden
+        }
+
+        function calculateTime() {
+            const time1 = timeStringToSeconds(document.getElementById('time1').value);
+            const distance1 = parseFloat(document.getElementById('distance1').value);
+            const distance2 = parseFloat(document.getElementById('distance2').value);
+            const k = parseFloat(document.getElementById('k-value').value);
+
+            if (isNaN(time1) || isNaN(distance1) || isNaN(distance2) || isNaN(k)) {
+                alert('Please fill in all fields with valid numbers.');
+                return;
+            }
+
+            const speed1 = 1000 * (time1 / distance1);
+            document.getElementById('known-speed').innerText = secondsToTimeString(speed1);
+
+            const time2 = time1 * Math.pow(distance2 / distance1, k);
+            document.getElementById('result').innerText = secondsToTimeString(time2);
+
+            const speed2 = 1000 * (time2 / distance2);
+            document.getElementById('speed').innerText = secondsToTimeString(speed2);
+        }
+    </script>
+</body>
+
+</html>

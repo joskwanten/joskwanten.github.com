@@ -210,25 +210,27 @@ export class TMS9918 {
         let PG = this.getPatternGenerationTable();
         let PN = this.getPatternNameTable();
         let CT = this.getColorTable();
-        for (let y = 0; y < 24; y++) {
-            for (let x = 0; x < 32; x++) {
-                let index = (y * 32) + x;
-                // Get Pattern name
-                let char = this.vram[PN + index];
-                // Get Colors from the Color table
-                let color = this.vram[CT + (char >>> 3)];
-                let fg = color >>> 4;
-                let bg = color & 0xf;
-                for (let i = 0; i < 8; i++) {
-                    let p = this.vram[PG + (8 * char) + i];
-                    for (let j = 0; j < 8; j++) {
-                        if (p & (1 << (7 - j))) {
-                            image[(256 * ((y * 8) + i) + ((x * 8) + j))] = this.palette[fg];
-                        }
-                        else {
-                            image[(256 * ((y * 8) + i) + ((x * 8) + j))] = this.palette[bg];
-                        }
-                    }
+        for (let y = 0; y < 192; y++) { // Loop over the 192 pixels in height
+            for (let x = 0; x < 256; x++) { // Loop over the 256 pixels in width
+                // Determine the character based on the current pixel coordinates
+                let charX = x >>> 3; // Horizontal character index (column)
+                let charY = y >>> 3; // Vertical character index (row)
+                let charIndex = (charY * 32) + charX;
+                // Fetch the pattern and colors
+                let char = this.vram[PN + charIndex]; // Pattern name from the table
+                let color = this.vram[CT + (char >>> 3)]; // Color information
+                let fg = color >>> 4; // Foreground color
+                let bg = color & 0xf; // Background color
+                // Calculate the specific pixel within the character pattern
+                let pixelRow = y & 0x7; // Row within the character (0-7)
+                let pixelCol = x & 0x7; // Column within the character (0-7)
+                let patternRow = this.vram[PG + (8 * char) + pixelRow];
+                // Check if the pixel is on or off
+                if (patternRow & (1 << (7 - pixelCol))) {
+                    image[(256 * y) + x] = this.palette[fg]; // Set pixel to foreground color
+                }
+                else {
+                    image[(256 * y) + x] = this.palette[bg]; // Set pixel to background color
                 }
             }
         }
@@ -237,28 +239,30 @@ export class TMS9918 {
         let PG = this.getPatternGenerationTable();
         let PN = this.getPatternNameTable();
         let CT = this.getColorTable();
-        let mask = (this.registers[4] & 3) << 8;
-        for (let y = 0; y < 24; y++) {
-            for (let x = 0; x < 32; x++) {
-                let index = (y * 32) + x;
-                let table = (index & mask) >>> 8;
-                // Get Pattern name
-                let char = this.vram[PN + index];
-                let offset = (table * 256 * 8) + (8 * char);
-                for (let i = 0; i < 8; i++) {
-                    let p = this.vram[PG + offset + i];
-                    let c = this.vram[CT + offset + i];
-                    let fg = c >>> 4;
-                    let bg = c & 0xf;
-                    let imgIndex = 256 * ((y * 8) + i) + ((x * 8));
-                    image[imgIndex + 0] = p & 0x80 ? this.palette[fg] : this.palette[bg];
-                    image[imgIndex + 1] = p & 0x40 ? this.palette[fg] : this.palette[bg];
-                    image[imgIndex + 2] = p & 0x20 ? this.palette[fg] : this.palette[bg];
-                    image[imgIndex + 3] = p & 0x10 ? this.palette[fg] : this.palette[bg];
-                    image[imgIndex + 4] = p & 0x08 ? this.palette[fg] : this.palette[bg];
-                    image[imgIndex + 5] = p & 0x04 ? this.palette[fg] : this.palette[bg];
-                    image[imgIndex + 6] = p & 0x02 ? this.palette[fg] : this.palette[bg];
-                    image[imgIndex + 7] = p & 0x01 ? this.palette[fg] : this.palette[bg];
+        let colourMask = ((this.registers[3] & 0x7f) << 3) | 7;
+        let patternMask = ((this.registers[4] & 3) << 8) | 0xff;
+        for (let y = 0; y < 192; y++) { // Loop over the 192 rows of pixels
+            for (let x = 0; x < 256; x++) { // Loop over the 256 columns of pixels
+                // Determine the character based on the current pixel coordinates
+                let charX = x >>> 3; // Horizontal character index (column)
+                let charY = y >>> 3; // Vertical character index (row)
+                let charIndex = (charY * 32) + charX; // Index in the pattern name table
+                // Select the correct pattern generation table based on the mask
+                let table = y >> 6;
+                // Fetch the pattern and color data                
+                let charcode = this.vram[PN + charIndex] + ((y >> 6) << 8);
+                let patternRow = this.vram[PG + ((charcode & patternMask) << 3) + (y & 7)]; // Pattern row for the current pixel                
+                let color = this.vram[CT + ((charcode & colourMask) << 3) + (y & 7)]; // Color data for the current row
+                let fg = color >>> 4; // Foreground color
+                let bg = color & 0xf; // Background color
+                // Determine the specific pixel within the row
+                let pixelCol = x & 0x7; // Column within the character (0-7)
+                // Set the pixel color based on whether it is on or off
+                if (patternRow & (1 << (7 - pixelCol))) {
+                    image[(256 * y) + x] = this.palette[fg]; // Set pixel to foreground color
+                }
+                else {
+                    image[(256 * y) + x] = this.palette[bg]; // Set pixel to background color
                 }
             }
         }
