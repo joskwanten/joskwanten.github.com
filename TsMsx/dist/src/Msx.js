@@ -209,8 +209,8 @@ window.onload = () => {
             var AudioContext = window.AudioContext;
             var audioContext = new AudioContext();
             // Add the worklet module
-            await audioContext.audioWorklet.addModule("./src/AY-3-8910-processor.js");
-            await audioContext.audioWorklet.addModule("./src/SCC-processor.js");
+            await audioContext.audioWorklet.addModule("./dist/src/AY-3-8910-processor.js");
+            await audioContext.audioWorklet.addModule("./dist/src/SCC-processor.js");
             // Create the worklet node
             ay3Node = new AudioWorkletNode(audioContext, "AY-3-8910-processor", {
                 outputChannelCount: [2],
