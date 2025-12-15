@@ -17,7 +17,7 @@ function changeBackground(c) {
 }
 const Hz = 60;
 const MHz = 3.579545;
-const CyclesPerInterrupt = (MHz * 2000000) / Hz;
+const CyclesPerInterrupt = (MHz * 1000000) / Hz;
 const loopTime = 1000 / Hz;
 let z80 = null;
 let vdp = new TMS9918(() => z80?.interrupt(), changeBackground);
@@ -219,9 +219,9 @@ window.onload = () => {
                 outputChannelCount: [2],
             });
             const gainNodePSG = audioContext.createGain();
-            gainNodePSG.gain.setValueAtTime(0.6, audioContext.currentTime);
+            gainNodePSG.gain.setValueAtTime(0.15, audioContext.currentTime);
             const gainNodeSCC = audioContext.createGain();
-            gainNodeSCC.gain.setValueAtTime(1, audioContext.currentTime);
+            gainNodeSCC.gain.setValueAtTime(.15, audioContext.currentTime);
             ;
             // Connect the node to the audio context
             ay3Node.connect(gainNodePSG);
